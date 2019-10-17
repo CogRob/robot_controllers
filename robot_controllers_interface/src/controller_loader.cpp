@@ -28,7 +28,7 @@
 
 // Author: Michael Ferguson
 
-#include <robot_controllers_interface/controller_loader.h>
+#include "robot_controllers_interface/controller_loader.h"
 
 namespace robot_controllers
 {
@@ -41,7 +41,7 @@ ControllerLoader::ControllerLoader() :
 
 bool ControllerLoader::init(const std::string& name, ControllerManager* manager)
 {
-  ros::NodeHandle nh(name);
+  rclcpp::Node nh(name);
   std::string controller_type;
 
   if (nh.getParam("type", controller_type))
@@ -54,12 +54,12 @@ bool ControllerLoader::init(const std::string& name, ControllerManager* manager)
     }
     catch (pluginlib::LibraryLoadException e)
     {
-      ROS_ERROR_STREAM("Plugin error while loading controller: " << e.what());
+      RCLCPP_ERROR(nh->get_logger(), "Plugin error while loading controller: %s", e.what());
       return false;
     }
     return true;
   }
-  ROS_ERROR_STREAM("Unable to load controller " << name.c_str());
+  RCLCPP_ERROR(nh->get_logger(), "Unable to load controller %s", name.c_str());
   return false;
 }
 
@@ -93,7 +93,7 @@ bool ControllerLoader::isActive()
   return active_;
 }
 
-void ControllerLoader::update(const ros::Time& time, const ros::Duration& dt)
+void ControllerLoader::update(const rclcpp::Time& time, const rclcpp::Duration& dt)
 {
   if (active_)
   {

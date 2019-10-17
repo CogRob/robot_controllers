@@ -31,7 +31,7 @@
 #ifndef ROBOT_CONTROLLERS_INTERFACE_JOINT_HANDLE_H
 #define ROBOT_CONTROLLERS_INTERFACE_JOINT_HANDLE_H
 
-#include <robot_controllers_interface/handle.h>
+#include "robot_controllers_interface/handle.h"
 
 namespace robot_controllers
 {

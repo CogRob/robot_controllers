@@ -32,9 +32,10 @@
 #define ROBOT_CONTROLLERS_INTERFACE_CONTROLLER_LOADER_H
 
 #include <string>
-#include <ros/ros.h>
-#include <pluginlib/class_loader.h>
-#include <robot_controllers_interface/controller.h>
+
+#include "pluginlib/class_loader.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "robot_controllers_interface/controller.h"
 
 namespace robot_controllers
 {
@@ -62,7 +63,7 @@ public:
   bool reset();
 
   /** @brief If controller is active, calls through to controller. */
-  void update(const ros::Time& time, const ros::Duration& dt);
+  void update(const rclcpp::Time& time, const rclcpp::Duration& dt);
 
   /** @brief Returns true if the controller is active. */
   bool isActive();

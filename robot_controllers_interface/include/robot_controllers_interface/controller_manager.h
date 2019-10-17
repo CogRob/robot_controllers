@@ -32,14 +32,17 @@
 #define ROBOT_CONTROLLERS_INTERFACE_CONTROLLER_MANAGER_H
 
 #include <string>
-#include <ros/ros.h>
-#include <actionlib/server/simple_action_server.h>
 
-#include <robot_controllers_msgs/QueryControllerStatesAction.h>
+#include "rclcpp/rclcpp.hpp"
 
-#include <robot_controllers_interface/joint_handle.h>
-#include <robot_controllers_interface/controller.h>
-#include <robot_controllers_interface/controller_loader.h>
+// #include <actionlib/server/simple_action_server.h>
+#include "rclcpp_action/rclcpp_action.hpp"
+
+#include "robot_controllers_msgs/QueryControllerStatesAction.h"
+
+#include "robot_controllers_interface/joint_handle.h"
+#include "robot_controllers_interface/controller.h"
+#include "robot_controllers_interface/controller_loader.h"
 
 namespace robot_controllers
 {
@@ -67,7 +70,7 @@ public:
    *
    * Note: JointHandles should be added before this is called.
    */
-  virtual int init(ros::NodeHandle& nh);
+  virtual int init(rclcpp::Node& nh);
 
   /** @brief Start a controller. */
   virtual int requestStart(const std::string& name);
@@ -76,7 +79,7 @@ public:
   virtual int requestStop(const std::string& name);
 
   /** @brief Update active controllers. */
-  virtual void update(const ros::Time& time, const ros::Duration& dt);
+  virtual void update(const rclcpp::Time& time, const rclcpp::Duration& dt);
 
   /** @brief Reset all controllers. */
   virtual void reset();
