@@ -38,7 +38,7 @@
 // #include <actionlib/server/simple_action_server.h>
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robot_controllers_msgs/QueryControllerStatesAction.h"
+#include "robot_controllers_msgs/action/query_controller_states.hpp"
 
 #include "robot_controllers_interface/joint_handle.h"
 #include "robot_controllers_interface/controller.h"
