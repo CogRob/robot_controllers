@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <ros/ros.h>
 #include <robot_controllers_interface/handle.h>
 
@@ -147,8 +147,7 @@ private:
   std::string name_;
 };
 
-// Some typedefs
-typedef boost::shared_ptr<Controller> ControllerPtr;
+using ControllerPtr = std::shared_ptr<Controller>;
 
 }  // namespace robot_controllers
 

@@ -47,10 +47,10 @@ namespace robot_controllers
 /** @brief Base class for a controller manager. */
 class ControllerManager
 {
-  typedef actionlib::SimpleActionServer<robot_controllers_msgs::QueryControllerStatesAction> server_t;
+  using server_t = actionlib::SimpleActionServer<robot_controllers_msgs::QueryControllerStatesAction>;
 
-  typedef std::vector<ControllerLoaderPtr> ControllerList;
-  typedef std::vector<JointHandlePtr> JointHandleList;
+  using ControllerList = std::vector<ControllerLoaderPtr>;
+  using JointHandleList = std::vector<JointHandlePtr>;
 
 public:
   ControllerManager();
@@ -111,7 +111,7 @@ private:
   ControllerList controllers_;
   JointHandleList joints_;
 
-  boost::shared_ptr<server_t> server_;
+  std::shared_ptr<server_t> server_;
 };
 
 }  // namespace robot_controllers

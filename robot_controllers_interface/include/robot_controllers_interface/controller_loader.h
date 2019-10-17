@@ -76,7 +76,7 @@ private:
   bool active_;
 };
 
-typedef boost::shared_ptr<ControllerLoader> ControllerLoaderPtr;
+using ControllerLoaderPtr = std::shared_ptr<ControllerLoader>;
 
 }  // namespace robot_controllers
 
