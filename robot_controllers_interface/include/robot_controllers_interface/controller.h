@@ -33,9 +33,10 @@
 
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
-#include <ros/ros.h>
-#include <robot_controllers_interface/handle.h>
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include "robot_controllers_interface/handle.h"
 
 /**
  * \mainpage
@@ -85,7 +86,7 @@ public:
    *        controller to get information about joints, etc.
    * @returns 0 if succesfully configured, negative values are error codes.
    */
-  virtual int init(ros::NodeHandle& nh, ControllerManager* manager)
+  virtual int init(rclcpp::Node& nh, ControllerManager* manager)
   {
     name_ = nh.getNamespace();
     // remove leading slash
@@ -123,7 +124,7 @@ public:
    * @param time The system time.
    * @param dt The timestep since last call to update.
    */
-  virtual void update(const ros::Time& time, const ros::Duration& dt) = 0;
+  virtual void update(const rclcpp::Time& time, const rclcpp::Duration& dt) = 0;
 
   /** @brief Get the name of this controller */
   std::string getName()
@@ -147,8 +148,7 @@ private:
   std::string name_;
 };
 
-// Some typedefs
-typedef boost::shared_ptr<Controller> ControllerPtr;
+using ControllerPtr = std::shared_ptr<Controller>;
 
 }  // namespace robot_controllers
 

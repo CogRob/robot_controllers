@@ -29,7 +29,7 @@
 // Author: Michael Ferguson
 
 #include <sstream>
-#include <robot_controllers_interface/controller_manager.h>
+#include "robot_controllers_interface/controller_manager.h"
 
 namespace robot_controllers
 {
@@ -38,7 +38,7 @@ ControllerManager::ControllerManager()
 {
 }
 
-int ControllerManager::init(ros::NodeHandle& nh)
+int ControllerManager::init(rclcpp::Node& nh)
 {
   // Find and load default controllers
   XmlRpc::XmlRpcValue controller_params;
@@ -46,7 +46,7 @@ int ControllerManager::init(ros::NodeHandle& nh)
   {
     if (controller_params.getType() != XmlRpc::XmlRpcValue::TypeArray)
     {
-      ROS_ERROR_NAMED("ControllerManager", "Parameter 'default_controllers' should be a list.");
+      RCLCPP_ERROR(nh->get_logger(), "ControllerManager: Parameter 'default_controllers' should be a list.");
       return -1;
     }
     else
@@ -58,7 +58,7 @@ int ControllerManager::init(ros::NodeHandle& nh)
         XmlRpc::XmlRpcValue &controller_name = controller_params[c];
         if (controller_name.getType() != XmlRpc::XmlRpcValue::TypeString)
         {
-          ROS_WARN_NAMED("ControllerManager", "Controller name is not a string?");
+          RCLCPP_WARN(nh->get_logger(), "ControllerManager: Controller name is not a string?");
           continue;
         }
 
@@ -69,13 +69,13 @@ int ControllerManager::init(ros::NodeHandle& nh)
   }
   else
   {
-    ROS_WARN_NAMED("ControllerManager", "No controllers loaded.");
+    RCLCPP_WARN(nh->get_logger(), "ControllerManager: No controllers loaded.");
     return -1;
   }
 
   // Setup actionlib server
   server_.reset(new server_t(nh, "/query_controller_states",
-                             boost::bind(&ControllerManager::execute, this, _1),
+                             std::bind(&ControllerManager::execute, this, _1),
                              false));
   server_->start();
 
@@ -98,14 +98,14 @@ int ControllerManager::requestStart(const std::string& name)
   // Does controller exist?
   if (!controller)
   {
-    ROS_ERROR_STREAM_NAMED("ControllerManager", "Unable to start " << name.c_str() << ": no such controller.");
+    RCLCPP_ERROR(nh->get_logger(), "ControllerManager: Unable to start %s: no such controller.", name.c_str());
     return -1;
   }
 
   // Is controller already running?
   if (controller->isActive())
   {
-    ROS_DEBUG_STREAM_NAMED("ControllerManager", "Unable to start " << name.c_str() << ": already running.");
+    RCLCPP_DEBUG(nh->get_logger(), "ControllerManager: Unable to start %s: already running.", name.c_str());
     return 0;
   }
 
@@ -136,14 +136,14 @@ int ControllerManager::requestStart(const std::string& name)
     {
       if ((*c)->stop(false))
       {
-        ROS_INFO_STREAM_NAMED("ControllerManager", "Stopped " << (*c)->getController()->getName().c_str());
+        RCLCPP_INFO(nh->get_logger(), "ControllerManager: Stopped %s", (*c)->getController()->getName().c_str());
       }
       else
       {
         // Unable to stop c, cannot start controller
-        ROS_ERROR_STREAM_NAMED("ControllerManager", "Unable to stop " <<
-                                                    (*c)->getController()->getName().c_str() <<
-                                                    " when trying to start " << name.c_str());
+        RCLCPP_ERROR(nh->get_logger(), "ControllerManager: Unable to stop %s when trying to start %s",
+                                                    (*c)->getController()->getName().c_str(),
+                                                    name.c_str());
         return -1;
       }
     }
@@ -152,7 +152,7 @@ int ControllerManager::requestStart(const std::string& name)
   // Start controller
   if (controller->start())
   {
-    ROS_INFO_STREAM_NAMED("ControllerManager", "Started " << controller->getController()->getName().c_str());
+    RCLCPP_INFO(nh->get_logger(), "ControllerManager: Started %s", controller->getController()->getName().c_str());
     return 0;
   }
 
@@ -169,7 +169,7 @@ int ControllerManager::requestStop(const std::string& name)
       // Stop controller (with force)
       if ((*c)->stop(true))
       {
-        ROS_INFO_STREAM_NAMED("ControllerManager", "Stopped " << (*c)->getController()->getName().c_str());
+        RCLCPP_INFO(nh->get_logger(), "ControllerManager: Stopped %s", (*c)->getController()->getName().c_str());
         return 0;
       }
       else
@@ -181,7 +181,7 @@ int ControllerManager::requestStop(const std::string& name)
   return -1;  // no such controller
 }
 
-void ControllerManager::update(const ros::Time& time, const ros::Duration& dt)
+void ControllerManager::update(const rclcpp::Time& time, const rclcpp::Duration& dt)
 {
   // Reset handles
   for (JointHandleList::iterator j = joints_.begin(); j != joints_.end(); j++)
@@ -282,7 +282,7 @@ void ControllerManager::execute(const robot_controllers_msgs::QueryControllerSta
     if (!in_controller_list)
     {
       // Check if controller exists on parameter server
-      ros::NodeHandle nh;
+      rclcpp::Node nh;
       if (nh.hasParam(state.name))
       { 
         // Create controller (in a loader)
